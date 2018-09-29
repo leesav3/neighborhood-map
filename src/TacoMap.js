@@ -3,9 +3,12 @@ import './App.css';
 
 class TacoMap extends Component {
 
+	state = {
+		restaurants: []
+	}
+
 	componentDidMount() {
 		this.getVenues();
-    	this.loadMap();
     }
 
   	loadMap = () => {
@@ -18,11 +21,18 @@ class TacoMap extends Component {
       		center: {lat: 35.7796, lng: -78.6382},
       		zoom: 8
     	});
+
+    	this.state.restaurants.map(thisRestaurant => {
+    		const marker = new window.google.maps.Marker({
+	    		position: {lat: Number(thisRestaurant.restaurant.location.latitude), lng: Number(thisRestaurant.restaurant.location.longitude)},
+	    		map: map,
+	    		title: thisRestaurant.restaurant.name
+	    	});
+    	})
   	}
 
   	getVenues = () => {
   		const apiURL = "https://developers.zomato.com/api/v2.1/search?entity_id=898&entity_type=city&count=10&cuisines=73&sort=rating";
-  		let venues = [];
   		fetch(apiURL, {
   			method: "GET",
   			headers: new Headers ({
@@ -31,10 +41,15 @@ class TacoMap extends Component {
   			})
   		}).then(response => {
   			return response.json()
+  			
   			}).then(json => {
-  				let venues = json.restaurants;
-  				console.log(json);
-  				console.log(venues[0].restaurant.name);
+  				//let restaurants = json.restaurants;
+  				console.log(json.restaurants);
+  				console.log(json.restaurants[0].restaurant.location.latitude);
+  				this.setState({
+  					restaurants: json.restaurants
+  				}, this.loadMap())
+  				//console.log(restaurants[0].restaurant.name);
   			}).catch(error => {
   			console.log("Error: " + error);
   		})
