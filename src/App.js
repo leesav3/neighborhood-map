@@ -5,12 +5,17 @@ import TacoMap from './TacoMap';
 import './App.css';
 
 class App extends Component {
-
+  
   constructor(props, context) {
     super(props, context);
     this.state = { visible: false };
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handleClick = this.handleClick.bind(this);
+
+    this.state = {
+      restaurants: [],
+      markers: []
+    }
   }
 
   handleClick(event) {
@@ -23,9 +28,7 @@ class App extends Component {
     this.setState({visible: !this.state.visible});
   }
 
-  state = {
-    restaurants: []
-  }
+  
 
   componentDidMount() {
     this.getVenues();
@@ -37,31 +40,40 @@ class App extends Component {
     }
   
     initMap = () => {
+      let arrayMarkers = this.state.markers;
+
       const map = new window.google.maps.Map(document.getElementById('map'), {
           center: {lat: 35.7796, lng: -78.6382},
           zoom: 8
       });
 
       // create an infowindow
-    const infoWindow = new window.google.maps.InfoWindow();
+      const infoWindow = new window.google.maps.InfoWindow();
 
       this.state.restaurants.map(thisRestaurant => {
         const contentString = `${thisRestaurant.restaurant.name + " " + thisRestaurant.restaurant.location.address}`;
 
         // create a marker
-        const marker = new window.google.maps.Marker({
+        let marker = new window.google.maps.Marker({
           position: {lat: Number(thisRestaurant.restaurant.location.latitude), lng: Number(thisRestaurant.restaurant.location.longitude)},
           map: map,
-          title: thisRestaurant.restaurant.name
+          title: thisRestaurant.restaurant.name,
+          animation: window.google.maps.Animation.DROP
         });
 
-        
+        // push marker into array
+        arrayMarkers.push(marker)
 
         // add listener to hook marker to infowindow
         marker.addListener('click', function() {
 
           infoWindow.setContent(contentString);
           infoWindow.open(map, marker);
+
+          arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
+          marker.setAnimation(window.google.maps.Animation.BOUNCE);
+        
+          
         })
           
       })
@@ -96,7 +108,7 @@ class App extends Component {
     return (
       <main>
         <Header handleClick={this.handleClick} />
-        <List handleClick={this.handleClick} menuVisibility={this.state.visible} />    
+        <List handleClick={this.handleClick} menuVisibility={this.state.visible} restaurants={this.state.restaurants} markers={this.state.markers} />    
         <TacoMap />
       </main>
     );

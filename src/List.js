@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import './App.css';
 
 class List extends Component {
+
+	state = {
+		query: ''
+	}
 	render() {
 		let visibility = "hide";
 
@@ -11,10 +15,12 @@ class List extends Component {
 
 		return (
 			<div id="flyoutMenu" onClick={this.props.handleClick} className={visibility}>
-				<h2>menu 1</h2>
-				<h2>menu 2</h2>
-				<h2>menu 3</h2>
-				<h2>menu 4</h2>
+				{this.props.restaurants && (
+					this.props.restaurants.map(restaurant => (
+					<div key={restaurant.restaurant.id}>
+						<a>{restaurant.restaurant.name}</a>
+					</div>
+				)))}
 			</div>
 		)
 	}
