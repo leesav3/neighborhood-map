@@ -61,6 +61,14 @@ i:hover {
   text-decoration: underline;
 }
 
+.filter-bar input {
+  width: 100%;
+  padding: 15px 10px;
+  font-size: 1.25em;
+  border: none;
+  outline: none;
+}
+
 /*** map ***/
 #map {
   height: 100vh;

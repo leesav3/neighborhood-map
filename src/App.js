@@ -44,7 +44,7 @@ class App extends Component {
 
       const map = new window.google.maps.Map(document.getElementById('map'), {
           center: {lat: 35.7796, lng: -78.6382},
-          zoom: 8
+          zoom: 9
       });
 
       // create an infowindow
@@ -71,9 +71,13 @@ class App extends Component {
           infoWindow.open(map, marker);
 
           arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
-          marker.setAnimation(window.google.maps.Animation.BOUNCE);
-        
+          marker.setAnimation(window.google.maps.Animation.BOUNCE)
           
+        })
+
+        // add listener to stop marker from bouncing when infowindow is closed
+        infoWindow.addListener('closeclick', function() {
+          arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
         })
           
       })
