@@ -4,10 +4,10 @@ import './App.css';
 class Header extends Component {
 	render() {
 		return (
-			<header className='app-title'>
-          		<button onClick={this.props.handleClick}>click me</button>
+			<div className='app-title'>
+				<i className="fas fa-bars" onClick={this.props.handleClick}></i>
           		<h1>Taco Finder</h1>
-        	</header>
+        	</div>
 		)
 	}
 

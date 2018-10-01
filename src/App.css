@@ -3,11 +3,29 @@
   padding: 10px 0;
   background: #2e7c31;
   text-align: center;
+  line-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .app-title h1 {
   font-weight: 400;
   margin: 0;
   color: white;
+  width: 95%;
+}
+
+i {
+  color: white;
+  font-size: 1.75em;
+  margin-left: 10px;
+  vertical-align: middle;
+  width: 5%;
+}
+
+i:hover {
+  color: yellow;
+  cursor: grab;
 }
 
 /*** menu ***/

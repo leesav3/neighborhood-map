@@ -22,12 +22,30 @@ class TacoMap extends Component {
       		zoom: 8
     	});
 
+
+
+    	// create an infowindow
+		const infoWindow = new window.google.maps.InfoWindow();
+
     	this.state.restaurants.map(thisRestaurant => {
+    		const contentString = `${thisRestaurant.restaurant.name + " " + thisRestaurant.restaurant.location.address}`;
+
+    		// create a marker
     		const marker = new window.google.maps.Marker({
 	    		position: {lat: Number(thisRestaurant.restaurant.location.latitude), lng: Number(thisRestaurant.restaurant.location.longitude)},
 	    		map: map,
 	    		title: thisRestaurant.restaurant.name
 	    	});
+
+    		
+
+    		// add listener to hook marker to infowindow
+    		marker.addListener('click', function() {
+
+    			infoWindow.setContent(contentString);
+    			infoWindow.open(map, marker);
+    		})
+    			
     	})
   	}
 
@@ -43,13 +61,11 @@ class TacoMap extends Component {
   			return response.json()
   			
   			}).then(json => {
-  				//let restaurants = json.restaurants;
   				console.log(json.restaurants);
   				console.log(json.restaurants[0].restaurant.location.latitude);
   				this.setState({
   					restaurants: json.restaurants
   				}, this.loadMap())
-  				//console.log(restaurants[0].restaurant.name);
   			}).catch(error => {
   			console.log("Error: " + error);
   		})
