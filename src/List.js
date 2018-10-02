@@ -13,21 +13,30 @@ class List extends Component {
 			restaurants: this.props.restaurants
 		}
 	}	
+
+	componentWillReceiveProps() {
+		this.initList();
+	}
+
+	initList = () => {
+		// put all restaurants in list to begin with
+		this.setState({restaurants: this.props.restaurants});
+	}
 	
 
 	updateQuery = (query) => {
-		this.setState({ query: query })
+		this.setState({ query: query });
 		this.filterList(query);
 	}
 
 	filterList = (query) => {
-		this.setState({ query })
+		
+		this.setState({ query: query })
 
 		let allRestaurants = this.props.restaurants
 
-		if ((this.state.query) && (this.state.query !== '')) {
-			console.log(query);
-
+		if ((query) && (query !== '')) {
+			
 			const match = new RegExp(escapeRegExp(query), 'i');
 			this.filteredList = allRestaurants.filter((restaurant) => match.test(restaurant.restaurant.name))
 			this.setState({restaurants: this.filteredList})
@@ -44,32 +53,6 @@ class List extends Component {
 			visibility = "show";
 		}
 
-		{ console.log(this.filteredList) }
-
-
-		if (this.filteredList && this.props.restaurants) {
-			console.log("here!");
-			results = (
-				this.filteredList.map(list => {
-					this.props.restaurants.map(restaurant => restaurant.restaurant.id === list.restaurant.id);
-					return(
-						<div key={list.restaurant.id}>
-							<a>{list.restaurant.name}</a>
-						</div>
-					)
-				})
-			)
-		} else {
-			console.log("in else");
-			results = this.props.restaurants && (
-				this.props.restaurants.map(restaurant => (
-				<div key={restaurant.restaurant.id}>
-					<a>{restaurant.restaurant.name}</a>
-				</div>
-			)))
-			
-		}
-
 		return (
 			<div id="flyoutMenu" className={visibility}>
 				<div onClick={this.props.handleClick}>
@@ -78,13 +61,21 @@ class List extends Component {
 				<div className="filter-bar">
 					<input value={this.state.query} onChange={(event) => this.updateQuery(event.target.value)} type="text" placeholder="Filter by Name"/>
 				</div>
-				<div>{results}</div>
+				{
+					this.state.restaurants.map(restaurant => (
+						<div key={restaurant.restaurant.id}>
+							<a>{restaurant.restaurant.name}</a>
+							
+						</div>
+					))
+				}
+				
 			</div>
 				
 		)
 	}
 	
-	
+
 
 }
 
