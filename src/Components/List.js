@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
+import '../App.css';
 import escapeRegExp from 'escape-string-regexp'
 
 class List extends Component {
@@ -20,9 +20,17 @@ class List extends Component {
 		this.initList();
 	}
 
-	// put all restaurants in list to begin with
+	// put all restaurants in list to begin with and clean up any filters, animations from previous
+	// opening and closing of slider list
 	initList = () => {
 		this.setState({restaurants: this.props.restaurants});
+
+		this.setState({ query: '' }); 
+		document.getElementById("inputFilter").value = "";
+		this.props.markers.forEach(marker => {
+			marker.setVisible(true);
+			marker.setAnimation(null);
+		})
 	}
 	
 
@@ -45,10 +53,12 @@ class List extends Component {
 			this.filteredList = allRestaurants.filter((restaurant) => match.test(restaurant.restaurant.name))
 			this.setState({restaurants: this.filteredList})
 			this.filteredMarkers = allMarkers.filter((marker) => match.test(marker.title))
+
 			// first set all markers invisible
 			allMarkers.map(marker => (
 				marker.setVisible(false)
 			))
+			
 			// now make each filtered marker visible
 			this.filteredMarkers.map(marker => (
 				marker.setVisible(true)
@@ -63,7 +73,6 @@ class List extends Component {
 	}
 
 	showInfoWindow = (id) => {
-		
 		this.props.markers.forEach(marker => {
 			if (marker.id === id) {
 				window.google.maps.event.trigger( marker, 'click' )
@@ -80,11 +89,8 @@ class List extends Component {
 
 		return (
 			<div id="flyoutMenu" className={visibility}>
-				<div onClick={this.props.handleClick}>
-					<i className="fa fa-times"></i>
-				</div>
 				<div className="filter-bar">
-					<input value={this.state.query} onChange={(event) => this.updateQuery(event.target.value)} type="text" placeholder="Filter by Name"/>
+					<input id="inputFilter" value={this.state.query} onChange={(event) => this.updateQuery(event.target.value)} type="text" placeholder="Filter by Name"/>
 				</div>
 				<ul>
 				{

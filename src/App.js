@@ -1,20 +1,23 @@
 import React, { Component } from 'react';
-import Header from './Header';
-import List from './List';
-import TacoMap from './TacoMap';
 import './App.css';
+
+import Header from './Components/Header';
+import List from './Components/List';
+import TacoMap from './Components/TacoMap';
+
 
 class App extends Component {
   
   constructor(props, context) {
     super(props, context);
-    this.state = { visible: false };
+
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handleClick = this.handleClick.bind(this);
 
     this.state = {
       restaurants: [],
-      markers: []
+      markers: [],
+      visible: false
     }
   }
 
@@ -58,27 +61,28 @@ class App extends Component {
         id: thisRestaurant.restaurant.id
       });
 
+
       // push marker into array
       arrayMarkers.push(marker)
 
+
       // add listener to hook marker to infowindow
       marker.addListener('click', function() {
-
         infoWindow.setContent(contentString);
         infoWindow.open(map, marker);
 
         arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
-        marker.setAnimation(window.google.maps.Animation.BOUNCE)
-        
+        marker.setAnimation(window.google.maps.Animation.BOUNCE)  
       })
 
       // add listener to stop marker from bouncing when infowindow is closed
       infoWindow.addListener('closeclick', function() {
         arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
-      })
-        
+      }) 
     })
   }
+
+
 
   // access zomato api and get data
   getRestaurants = () => {
@@ -96,8 +100,9 @@ class App extends Component {
         this.setState({
           restaurants: json.restaurants
         }, this.loadMap())
-      }).catch(error => {
+    }).catch(error => {
       console.log("Error: " + error);
+      alert("Error loading restaurants");
     })
   }
 
@@ -118,12 +123,15 @@ class App extends Component {
 }
 
 // loads map in react
-function loadScript(url) {
+function loadScript(url, state) {
   const index = window.document.getElementsByTagName("script")[0]
   const script = window.document.createElement("script")
   script.src = url
   script.async = true
   script.defer = true
+  script.onerror = function() {
+    alert("Error loading map");
+  }
   index.parentNode.insertBefore(script, index)
 }
 

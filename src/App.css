@@ -1,8 +1,8 @@
 /*** header ***/
 .app-title {
-  padding: 10px 0;
-  background: #2e7c31;
-  text-align: center;
+  padding: 5px 0;
+  background: #C91919;
+  /*text-align: center;*/
   line-height: 40px;
   display: flex;
   align-items: center;
@@ -13,6 +13,7 @@
   margin: 0;
   color: white;
   width: 95%;
+  padding-left: 25px;
 }
 
 i {
@@ -20,21 +21,23 @@ i {
   font-size: 1.75em;
   margin-left: 10px;
   vertical-align: middle;
-  width: 5%;
+  padding: 10px;
+  border-radius: 50%;
 }
 
 i:hover {
-  color: yellow;
   cursor: grab;
+  background-color: white;
+  color: #C91919;
 }
 
 /*** menu ***/
 #flyoutMenu {
   width: 30vw;
-  height: 100vh;
-  background-color: #FFE600;
+  height: 90vh;
+  background-color: #41A332;
   position: fixed;
-  top: 0;
+  top: 58px;
   left: 0;
   transition: transform .3s
               cubic-bezier(0, .52, 0, 1);
@@ -61,6 +64,26 @@ i:hover {
   text-decoration: underline;
 }
 
+#flyoutMenu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#flyoutMenu li {
+  padding: 10px;
+}
+
+#flyoutMenu li:hover {
+  color: #41A332;
+  background-color: black;
+}
+
+#flyoutMenu i {
+  color: black;
+  margin-left: 80%;
+}
+
 .filter-bar input {
   width: 100%;
   padding: 15px 10px;
@@ -78,4 +101,9 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+}
+
+.error {
+  font-family: sans-serif;
+  color: red;
 }
