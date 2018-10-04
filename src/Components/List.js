@@ -17,31 +17,45 @@ class List extends Component {
 	}	
 
 	componentWillReceiveProps() {
-		this.initList();
+		//this.initList();
 	}
+
+	//isInfoWindowOpen(infoWindow) {
+	//	let map = infoWindow.getMap();
+	//	return (map !== null && typeof map !== "undefined");
+	//}
 
 	// put all restaurants in list to begin with and clean up any filters, animations from previous
 	// opening and closing of slider list
 	initList = () => {
-		this.setState({restaurants: this.props.restaurants});
+		console.log("list: initlist");
+		// closing info window, do cleanup
+		console.log(this.props.visibility)
+		if (!this.props.visibililty) {
+			this.setState({restaurants: this.props.restaurants});
 
-		this.setState({ query: '' }); 
-		document.getElementById("inputFilter").value = "";
-		this.props.markers.forEach(marker => {
+			this.setState({ query: '' }); 
+			document.getElementById("inputFilter").value = "";
+			this.props.markers.forEach(marker => {
 			marker.setVisible(true);
 			marker.setAnimation(null);
 		})
+	}
+		
+		
 	}
 	
 
 	// function to update query state. runs each time text is inputted
 	updateQuery = (query) => {
+		console.log("list: update query");
 		this.setState({ query: query });
 		this.filterList(query);
 	}
 
 	// function to filter restaurant list. runs each time text is inputted
 	filterList = (query) => {
+		console.log("list: filterlist");
 		
 		this.setState({ query: query })
 
@@ -58,7 +72,7 @@ class List extends Component {
 			allMarkers.map(marker => (
 				marker.setVisible(false)
 			))
-			
+
 			// now make each filtered marker visible
 			this.filteredMarkers.map(marker => (
 				marker.setVisible(true)
@@ -73,6 +87,7 @@ class List extends Component {
 	}
 
 	showInfoWindow = (id) => {
+		console.log("list: showinfowindow");
 		this.props.markers.forEach(marker => {
 			if (marker.id === id) {
 				window.google.maps.event.trigger( marker, 'click' )
@@ -86,6 +101,8 @@ class List extends Component {
 		if (this.props.menuVisibility) {
 			visibility = "show";
 		}
+
+		console.log(this.props.menuVisibility);
 
 		return (
 			<div id="flyoutMenu" className={visibility}>

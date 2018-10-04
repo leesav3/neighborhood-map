@@ -34,7 +34,7 @@ i:hover {
 /*** menu ***/
 #flyoutMenu {
   width: 30vw;
-  height: 90vh;
+  height: 100vh;
   background-color: #41A332;
   position: fixed;
   top: 58px;

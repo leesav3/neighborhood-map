@@ -14,10 +14,12 @@ class App extends Component {
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handleClick = this.handleClick.bind(this);
 
+
     this.state = {
       restaurants: [],
       markers: [],
-      visible: false
+      visible: false,
+      infoWindow: null
     }
   }
 
@@ -25,8 +27,26 @@ class App extends Component {
     this.toggleMenu();
   }
 
+  cleanUp(visible) {
+    console.log("app cleanup");
+    // if list is being closed, we want to reset map
+    //console.log(visible);
+    if (!visible) {
+      if (this.state.infoWindow) {
+        this.state.infoWindow.close();
+      }
+
+      this.refs.childList.initList();
+    }
+
+    
+  }
+
   toggleMenu() {
-    this.setState({visible: !this.state.visible});
+    this.setState({visible: !this.state.visible}, () => {
+      //console.log(this.state.visible); 
+    });
+    this.cleanUp(this.visible);
   }
 
   componentDidMount() {
@@ -38,7 +58,16 @@ class App extends Component {
     window.initMap = this.initMap;
   }
 
+  //closeInfoWindow() {
+  //  this.infoWindow.close();
+  //}
+
+  //testFunc(info) {
+  //  this.setState({infoWindow: info})
+  //}
+
   initMap = () => {
+    console.log("initmap");
     let arrayMarkers = this.state.markers;
 
     const map = new window.google.maps.Map(document.getElementById('map'), {
@@ -67,9 +96,14 @@ class App extends Component {
 
 
       // add listener to hook marker to infowindow
-      marker.addListener('click', function() {
+      marker.addListener('click', () => {
+        console.log("app marker listener");
         infoWindow.setContent(contentString);
         infoWindow.open(map, marker);
+
+        this.setState({ infoWindow: infoWindow })
+
+        //console.log(this.state.infoWindow);
 
         arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
         marker.setAnimation(window.google.maps.Animation.BOUNCE)  
@@ -77,8 +111,10 @@ class App extends Component {
 
       // add listener to stop marker from bouncing when infowindow is closed
       infoWindow.addListener('closeclick', function() {
+        console.log("app info window listener");
         arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
       }) 
+
     })
   }
 
@@ -110,11 +146,11 @@ class App extends Component {
     return (
       <main>
         <Header handleClick={this.handleClick} />
-        <List 
-          handleClick={this.handleClick} 
+        <List ref="childList"
           menuVisibility={this.state.visible} 
           restaurants={this.state.restaurants} 
           markers={this.state.markers} 
+          //closeInfoWindow={this.closeInfoWindow}
         />    
         <TacoMap />
       </main>
