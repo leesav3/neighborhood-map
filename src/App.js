@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import escapeRegExp from 'escape-string-regexp'
 import './App.css';
 
 import Header from './Components/Header';
@@ -11,15 +12,77 @@ class App extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.toggleMenu = this.toggleMenu.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-
-
     this.state = {
-      restaurants: [],
+      filteredRestaurants: [],
+      allRestaurants: [],
       markers: [],
       visible: false,
+      query: '',
       infoWindow: null
+    }
+
+    this.toggleMenu = this.toggleMenu.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  // function to update query state. runs each time text is inputted
+  updateQuery = (query) => {
+    console.log("list: update query");
+    this.setState({ query: query });
+    this.filterList(query);
+  }
+
+  // function to filter restaurant list. runs each time text is inputted
+  filterList = (query) => {
+    console.log("list: filterlist");
+    
+    this.setState({ query: query })
+
+    let allRestaurants = this.state.allRestaurants
+    let allMarkers = this.state.markers
+
+    if ((query) && (query !== '')) {
+      const match = new RegExp(escapeRegExp(query), 'i');
+      this.filteredList = allRestaurants.filter((restaurant) => match.test(restaurant.restaurant.name))
+      this.setState({filteredRestaurants: this.filteredList})
+      this.filteredMarkers = allMarkers.filter((marker) => match.test(marker.title))
+
+      // first set all markers invisible
+      allMarkers.map(marker => (
+        marker.setVisible(false)
+      ))
+
+      // now make each filtered marker visible
+      this.filteredMarkers.map(marker => (
+        marker.setVisible(true)
+      ))
+
+      // if query is being changed, close any open infowindows
+      if (this.state.infoWindow) {
+        this.state.infoWindow.close();
+      }
+
+      // stop any animation as query is being entered
+      this.state.markers.forEach(marker => {
+        marker.setAnimation(null);
+      })
+
+    } else {
+      this.setState({filteredRestaurants: allRestaurants})
+      allMarkers.map(marker => (
+        marker.setVisible(true)
+      ))
+
+      // if query is being changed, close any open infowindows
+      if (this.state.infoWindow) {
+        this.state.infoWindow.close();
+      }
+
+      // stop any animation as query is being entered
+      this.state.markers.forEach(marker => {
+        marker.setAnimation(null);
+      })
+
     }
   }
 
@@ -36,35 +99,34 @@ class App extends Component {
         this.state.infoWindow.close();
       }
 
-      this.refs.childList.initList();
-    }
+      this.setState({ query: '' }); 
+      document.getElementById("inputFilter").value = "";
+      this.state.markers.forEach(marker => {
+        marker.setVisible(true);
+        marker.setAnimation(null);
+      })
 
+      this.setState({filteredRestaurants: this.state.allRestaurants});
+    }
     
   }
 
   toggleMenu() {
     this.setState({visible: !this.state.visible}, () => {
-      //console.log(this.state.visible); 
+      console.log(this.state.visible); 
     });
     this.cleanUp(this.visible);
   }
 
   componentDidMount() {
     this.getRestaurants();
+    console.log(this.state.restaurants);
   }
 
   loadMap = () => {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyA3TEO3u-tQkhwwKu8TyI-RsmlQ_JwQ2Ho&callback=initMap");
     window.initMap = this.initMap;
   }
-
-  //closeInfoWindow() {
-  //  this.infoWindow.close();
-  //}
-
-  //testFunc(info) {
-  //  this.setState({infoWindow: info})
-  //}
 
   initMap = () => {
     console.log("initmap");
@@ -77,6 +139,12 @@ class App extends Component {
 
     // create an infowindow
     const infoWindow = new window.google.maps.InfoWindow();
+    console.log(this.state.restaurants);
+
+    // fill state arrays with restaurants
+    this.setState({filteredRestaurants : this.state.restaurants})
+    this.setState({allRestaurants : this.state.restaurants})
+    
 
     this.state.restaurants.forEach(thisRestaurant => {
       const contentString = `${thisRestaurant.restaurant.name + " " + thisRestaurant.restaurant.location.address}`;
@@ -145,13 +213,14 @@ class App extends Component {
   render() {
     return (
       <main>
-        <Header handleClick={this.handleClick} />
-        <List ref="childList"
+        <Header handleClick={this.handleClick}/>
+        <List 
           menuVisibility={this.state.visible} 
-          restaurants={this.state.restaurants} 
+          restaurants={this.state.filteredRestaurants} 
           markers={this.state.markers} 
-          //closeInfoWindow={this.closeInfoWindow}
-        />    
+          query={this.state.query}
+          updateQuery={this.updateQuery} 
+        />
         <TacoMap />
       </main>
     );
