@@ -19,10 +19,13 @@ class App extends Component {
       visible: false,
       query: '',
       infoWindow: null
+      //map: null
     }
 
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handleClick = this.handleClick.bind(this);
+
+    const map = null;
   }
 
   // function to update query state. runs each time text is inputted
@@ -106,14 +109,26 @@ class App extends Component {
         marker.setAnimation(null);
       })
 
+      
+      
+
       this.setState({filteredRestaurants: this.state.allRestaurants});
-    }
+    } 
     
   }
 
   toggleMenu() {
     this.setState({visible: !this.state.visible}, () => {
       console.log(this.state.visible); 
+      if (this.state.visible) {
+        // if list is open, we want raleigh (center) to shift right
+        let center = new window.google.maps.LatLng(35.7796, -79.0558)
+        this.map.panTo(center); 
+      } else {
+        // if list is closed, we want raleigh (center) to shift left
+        let center = new window.google.maps.LatLng(35.7796, -78.6382)
+        this.map.panTo(center); 
+      }
     });
     this.cleanUp(this.visible);
   }
@@ -132,10 +147,14 @@ class App extends Component {
     console.log("initmap");
     let arrayMarkers = this.state.markers;
 
-    const map = new window.google.maps.Map(document.getElementById('map'), {
+    //const map = new window.google.maps.Map(document.getElementById('map'), {
+    this.map = new window.google.maps.Map(document.getElementById('map'), {
         center: {lat: 35.7796, lng: -78.6382},
         zoom: 9
     });
+
+    //this.setState({map: map})
+
 
     // create an infowindow
     const infoWindow = new window.google.maps.InfoWindow();
@@ -152,7 +171,7 @@ class App extends Component {
       // create a marker
       let marker = new window.google.maps.Marker({
         position: {lat: Number(thisRestaurant.restaurant.location.latitude), lng: Number(thisRestaurant.restaurant.location.longitude)},
-        map: map,
+        map: this.map,
         title: thisRestaurant.restaurant.name,
         animation: window.google.maps.Animation.DROP,
         id: thisRestaurant.restaurant.id
@@ -167,7 +186,7 @@ class App extends Component {
       marker.addListener('click', () => {
         console.log("app marker listener");
         infoWindow.setContent(contentString);
-        infoWindow.open(map, marker);
+        infoWindow.open(this.map, marker);
 
         this.setState({ infoWindow: infoWindow })
 
