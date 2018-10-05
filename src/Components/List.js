@@ -8,16 +8,13 @@ class List extends Component {
 		super(props, context);
 
 		this.state = {
-			query: '',
 			restaurants: this.props.restaurants,
-			markers: this.props.markers,
-			filteredList: [],
-			filteredMarkers: []
+			markers: this.props.markers
 		}
 	}	
 
 	showInfoWindow = (id) => {
-		console.log("list: showinfowindow");
+		//console.log("list: showinfowindow");
 		this.props.markers.forEach(marker => {
 			if (marker.id === id) {
 				window.google.maps.event.trigger( marker, 'click' )

@@ -13,43 +13,41 @@ class App extends Component {
     super(props, context);
 
     this.state = {
-      filteredRestaurants: [],
-      allRestaurants: [],
+      restaurants: [],
       markers: [],
       visible: false,
-      query: '',
-      infoWindow: null
-      //map: null
+      query: ''
     }
 
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handleClick = this.handleClick.bind(this);
-
-    const map = null;
   }
 
   // function to update query state. runs each time text is inputted
   updateQuery = (query) => {
-    console.log("list: update query");
+    //console.log("list: update query");
     this.setState({ query: query });
     this.filterList(query);
   }
 
   // function to filter restaurant list. runs each time text is inputted
   filterList = (query) => {
-    console.log("list: filterlist");
+    //console.log("list: filterlist");
     
     this.setState({ query: query })
 
-    let allRestaurants = this.state.allRestaurants
     let allMarkers = this.state.markers
 
     if ((query) && (query !== '')) {
       const match = new RegExp(escapeRegExp(query), 'i');
-      this.filteredList = allRestaurants.filter((restaurant) => match.test(restaurant.restaurant.name))
-      this.setState({filteredRestaurants: this.filteredList})
+
+      this.filteredList = this.state.restaurants.filter((restaurant) => match.test(restaurant.restaurant.name))
+
+      this.setState({restaurants: this.filteredList})
+
       this.filteredMarkers = allMarkers.filter((marker) => match.test(marker.title))
 
+      // Clean up map!
       // first set all markers invisible
       allMarkers.map(marker => (
         marker.setVisible(false)
@@ -61,8 +59,8 @@ class App extends Component {
       ))
 
       // if query is being changed, close any open infowindows
-      if (this.state.infoWindow) {
-        this.state.infoWindow.close();
+      if (this.infoWindow) {
+        this.infoWindow.close();
       }
 
       // stop any animation as query is being entered
@@ -71,14 +69,16 @@ class App extends Component {
       })
 
     } else {
-      this.setState({filteredRestaurants: allRestaurants})
+      // if there is no query, display default 10 restaurants
+      // reset map (close infowindows and animations)
+      this.setState({restaurants: this.allRestaurants})
       allMarkers.map(marker => (
         marker.setVisible(true)
       ))
 
       // if query is being changed, close any open infowindows
-      if (this.state.infoWindow) {
-        this.state.infoWindow.close();
+      if (this.infoWindow) {
+        this.infoWindow.close();
       }
 
       // stop any animation as query is being entered
@@ -94,12 +94,13 @@ class App extends Component {
   }
 
   cleanUp(visible) {
-    console.log("app cleanup");
+    //console.log("app cleanup");
+
     // if list is being closed, we want to reset map
     //console.log(visible);
     if (!visible) {
-      if (this.state.infoWindow) {
-        this.state.infoWindow.close();
+      if (this.infoWindow) {
+        this.infoWindow.close();
       }
 
       this.setState({ query: '' }); 
@@ -109,17 +110,14 @@ class App extends Component {
         marker.setAnimation(null);
       })
 
-      
-      
-
-      this.setState({filteredRestaurants: this.state.allRestaurants});
+      this.setState({restaurants: this.allRestaurants});
     } 
     
   }
 
   toggleMenu() {
     this.setState({visible: !this.state.visible}, () => {
-      console.log(this.state.visible); 
+      //console.log(this.state.visible); 
       if (this.state.visible) {
         // if list is open, we want raleigh (center) to shift right
         let center = new window.google.maps.LatLng(35.7796, -79.0558)
@@ -135,7 +133,6 @@ class App extends Component {
 
   componentDidMount() {
     this.getRestaurants();
-    console.log(this.state.restaurants);
   }
 
   loadMap = () => {
@@ -144,7 +141,7 @@ class App extends Component {
   }
 
   initMap = () => {
-    console.log("initmap");
+    //console.log("initmap");
     let arrayMarkers = this.state.markers;
 
     //const map = new window.google.maps.Map(document.getElementById('map'), {
@@ -153,21 +150,17 @@ class App extends Component {
         zoom: 9
     });
 
-    //this.setState({map: map})
-
 
     // create an infowindow
-    const infoWindow = new window.google.maps.InfoWindow();
+    this.infoWindow = new window.google.maps.InfoWindow();
+
+    // set variable for all restaurants before filtering
+    this.allRestaurants = this.state.restaurants;
     console.log(this.state.restaurants);
 
-    // fill state arrays with restaurants
-    this.setState({filteredRestaurants : this.state.restaurants})
-    this.setState({allRestaurants : this.state.restaurants})
-    
-
     this.state.restaurants.forEach(thisRestaurant => {
-      const contentString = `${thisRestaurant.restaurant.name + " " + thisRestaurant.restaurant.location.address}`;
-
+      //const contentString = `${thisRestaurant.restaurant.name + " " + thisRestaurant.restaurant.location.address}`;
+      const contentString = `<div><h3>${thisRestaurant.restaurant.name}</h2><p>${thisRestaurant.restaurant.location.address}</p><a href=${thisRestaurant.restaurant.photos_url} target="_blank">View Photos and Reviews</a><p><div id="star-container"><div id="star"><div id="star-text">${thisRestaurant.restaurant.user_rating.aggregate_rating}</div></div></div></div>`
       // create a marker
       let marker = new window.google.maps.Marker({
         position: {lat: Number(thisRestaurant.restaurant.location.latitude), lng: Number(thisRestaurant.restaurant.location.longitude)},
@@ -184,21 +177,17 @@ class App extends Component {
 
       // add listener to hook marker to infowindow
       marker.addListener('click', () => {
-        console.log("app marker listener");
-        infoWindow.setContent(contentString);
-        infoWindow.open(this.map, marker);
-
-        this.setState({ infoWindow: infoWindow })
-
-        //console.log(this.state.infoWindow);
+        //console.log("app marker listener");
+        this.infoWindow.setContent(contentString);
+        this.infoWindow.open(this.map, marker);
 
         arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
         marker.setAnimation(window.google.maps.Animation.BOUNCE)  
       })
 
       // add listener to stop marker from bouncing when infowindow is closed
-      infoWindow.addListener('closeclick', function() {
-        console.log("app info window listener");
+      this.infoWindow.addListener('closeclick', function() {
+        //console.log("app info window listener");
         arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
       }) 
 
@@ -235,7 +224,7 @@ class App extends Component {
         <Header handleClick={this.handleClick}/>
         <List 
           menuVisibility={this.state.visible} 
-          restaurants={this.state.filteredRestaurants} 
+          restaurants={this.state.restaurants} 
           markers={this.state.markers} 
           query={this.state.query}
           updateQuery={this.updateQuery} 
