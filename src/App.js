@@ -241,7 +241,9 @@ console.log(this.state.visible)
   render() {
     return (
       <main>
-        <Header handleClick={this.handleClick}/>
+        <Header 
+          handleClick={this.handleClick}
+        />
         <List 
           menuVisibility={this.state.visible} 
           restaurants={this.state.restaurants} 

@@ -35,16 +35,20 @@ class List extends Component {
 		return (
 			<div id="flyoutMenu" className={visibility}>
 				<div className="filter-bar">
-					<input id="inputFilter" value={this.props.query} onChange={(event) => this.props.updateQuery(event.target.value)} type="text" placeholder="Filter by Name"/>
+					<input id="inputFilter" aria-label="filter by restaurant name" value={this.props.query} onChange={(event) => this.props.updateQuery(event.target.value)} type="text" placeholder="Filter by Name"/>
 				</div>
 				<ul>
 				{
 					restaurantList.map(restaurant => (
 						<li 
+							aria-label={restaurant.restaurant.name + "details"}
+							tabindex="0"
 							key={restaurant.restaurant.id} 
 							value={restaurant.restaurant.id} 
+							onKeyPress={(event) => {if (event.key === 'Enter') {this.showInfoWindow(restaurant.restaurant.id)}}}
 							onClick={() => {this.showInfoWindow(restaurant.restaurant.id)}}>
 							{restaurant.restaurant.name}
+
 						</li>
 					))
 				}
