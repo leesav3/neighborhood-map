@@ -14,7 +14,7 @@ class List extends Component {
 	}	
 
 	showInfoWindow = (id) => {
-		//console.log("list: showinfowindow");
+		console.log("list: showinfowindow");
 		this.props.markers.forEach(marker => {
 			if (marker.id === id) {
 				window.google.maps.event.trigger( marker, 'click' )
@@ -23,6 +23,7 @@ class List extends Component {
 	}
 
 	render() {
+		console.log("render list " + this.props.menuVisibility);
 		const restaurantList = this.props.restaurants;
 	
 		let visibility = "hide";
@@ -44,7 +45,6 @@ class List extends Component {
 							value={restaurant.restaurant.id} 
 							onClick={() => {this.showInfoWindow(restaurant.restaurant.id)}}>
 							{restaurant.restaurant.name}
-
 						</li>
 					))
 				}

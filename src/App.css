@@ -2,7 +2,6 @@
 .app-title {
   padding: 5px 0;
   background: #C91919;
-  /*text-align: center;*/
   line-height: 40px;
   display: flex;
   align-items: center;
@@ -19,10 +18,11 @@
 i {
   color: white;
   font-size: 1.5em;
-  margin-left: 10px;
+  margin-right: 10px;
   vertical-align: middle;
   padding: 10px;
   border-radius: 50%;
+  
 }
 
 i:hover {
@@ -31,29 +31,9 @@ i:hover {
   color: #C91919;
 }
 
+
 /*** menu ***/
-#flyoutMenu {
-  width: 30vw;
-  height: 100vh;
-  background-color: #41A332;
-  position: fixed;
-  top: 53px;
-  left: 0;
-  transition: transform .3s
-              cubic-bezier(0, .52, 0, 1);
-  overflow: scroll;
-  z-index: 1000;
-}
- 
-#flyoutMenu.hide {
-  transform: translate3d(-30vw, 0, 0);
-}
- 
-#flyoutMenu.show {
-  transform: translate3d(0vw, 0, 0);
-  overflow: hidden;
-}
- 
+
 #flyoutMenu h2 a {
   color: #333;
   margin-left: 15px;
@@ -90,7 +70,9 @@ i:hover {
   font-size: 1.25em;
   border: none;
   outline: none;
+  /*position: fixed;*/
 }
+
 
 /*** map ***/
 #map {
@@ -134,3 +116,83 @@ html, body {
   top: 0;
   left: 0;
 }
+
+
+/*** media queries ***/
+
+@media screen and (min-width: 901px) {
+  #flyoutMenu {
+    width: 30vw;
+    height: 100vh;
+    background-color: #41A332;
+    position: fixed;
+    top: 53px;
+    margin: 0 0 0 0;
+    right: 0;
+    transition: transform .3s*/
+                cubic-bezier(0, .52, 0, 1);
+    overflow: scroll;
+    z-index: 1000;
+  }
+   
+  #flyoutMenu.hide {
+    transform: translate3d(30vw, 0, 0);
+  }
+   
+  #flyoutMenu.show {
+    transform: translate3d(0vw, 0, 0);
+    overflow: hidden;
+  }
+
+  i {
+    visibility: hidden;
+  }
+}
+
+@media screen and (min-width: 601px) and (max-width: 900px) {
+  #flyoutMenu {
+    width: 30vw;
+    height: 100vh;
+    background-color: #41A332;
+    position: fixed;
+    top: 53px;
+    margin: 0 0 0 0;
+    right: 0;
+    transition: transform .3s*/
+                cubic-bezier(0, .52, 0, 1);
+    overflow: scroll;
+    z-index: 1000;
+  }
+   
+  #flyoutMenu.hide {
+    transform: translate3d(30vw, 0, 0);
+  }
+   
+  #flyoutMenu.show {
+    transform: translate3d(0vw, 0, 0);
+    overflow: hidden;
+  }
+
+  i {
+    visibility: visible;
+  }
+}
+
+@media screen and (min-width: 0px) and (max-width: 600px){
+  #flyoutMenu {
+    width: 100vw;
+    height: 30vh;
+    max-height: 30vh;
+    overflow-y: auto;
+    background-color: #41A332;
+  }
+
+  i {
+    visibility: hidden;
+  }
+}
+
+  
+
+ 
+

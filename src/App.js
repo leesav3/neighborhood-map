@@ -16,23 +16,61 @@ class App extends Component {
       restaurants: [],
       markers: [],
       visible: false,
-      query: ''
+      query: '',
+      width: window.innerWidth
     }
 
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handleClick = this.handleClick.bind(this);
   }
 
+  componentWillMount() {
+    window.addEventListener('resize', this.handleWindowSizeChange);
+  }
+
+  componentDidMount() {
+    this.getRestaurants();
+
+    this.setState({width: window.innerWidth}, () => {
+      if (this.state.width > 901) {
+        this.setState({visible : true}, () => {
+          console.log(this.state.visible);
+        })
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleWindowSizeChange);
+  }
+
+  handleWindowSizeChange = () => {
+    console.log("handle size change");
+    this.setState({width: window.innerWidth}, () => {
+      if (this.state.width > 901) {
+        //let center = new window.google.maps.LatLng(35.7796, -78.6382)
+        this.setState({visible : true}, () => {
+          console.log(this.state.visible);
+        })
+      } else {
+        //let center = new window.google.maps.LatLng(35.7796, -78.6382)
+        this.setState({visible : false}, () => {
+          console.log(this.state.visible);
+        })
+      }
+    });
+  }
+
   // function to update query state. runs each time text is inputted
   updateQuery = (query) => {
-    //console.log("list: update query");
+    console.log("list: update query");
     this.setState({ query: query });
     this.filterList(query);
   }
 
   // function to filter restaurant list. runs each time text is inputted
   filterList = (query) => {
-    //console.log("list: filterlist");
+    console.log("list: filterlist");
     
     this.setState({ query: query })
 
@@ -94,10 +132,9 @@ class App extends Component {
   }
 
   cleanUp(visible) {
-    //console.log("app cleanup");
+    console.log("app cleanup");
 
     // if list is being closed, we want to reset map
-    //console.log(visible);
     if (!visible) {
       if (this.infoWindow) {
         this.infoWindow.close();
@@ -117,22 +154,9 @@ class App extends Component {
 
   toggleMenu() {
     this.setState({visible: !this.state.visible}, () => {
-      //console.log(this.state.visible); 
-      if (this.state.visible) {
-        // if list is open, we want raleigh (center) to shift right
-        let center = new window.google.maps.LatLng(35.7796, -79.0558)
-        this.map.panTo(center); 
-      } else {
-        // if list is closed, we want raleigh (center) to shift left
-        let center = new window.google.maps.LatLng(35.7796, -78.6382)
-        this.map.panTo(center); 
-      }
+      console.log(this.state.visible); 
     });
     this.cleanUp(this.visible);
-  }
-
-  componentDidMount() {
-    this.getRestaurants();
   }
 
   loadMap = () => {
@@ -141,13 +165,13 @@ class App extends Component {
   }
 
   initMap = () => {
-    //console.log("initmap");
+    console.log("initmap");
     let arrayMarkers = this.state.markers;
 
-    //const map = new window.google.maps.Map(document.getElementById('map'), {
     this.map = new window.google.maps.Map(document.getElementById('map'), {
         center: {lat: 35.7796, lng: -78.6382},
-        zoom: 9
+        zoom: 9,
+        draggable: false
     });
 
 
@@ -156,10 +180,8 @@ class App extends Component {
 
     // set variable for all restaurants before filtering
     this.allRestaurants = this.state.restaurants;
-    console.log(this.state.restaurants);
 
     this.state.restaurants.forEach(thisRestaurant => {
-      //const contentString = `${thisRestaurant.restaurant.name + " " + thisRestaurant.restaurant.location.address}`;
       const contentString = `<div><h3>${thisRestaurant.restaurant.name}</h2><p>${thisRestaurant.restaurant.location.address}</p><a href=${thisRestaurant.restaurant.photos_url} target="_blank">View Photos and Reviews</a><p><div id="star-container"><div id="star"><div id="star-text">${thisRestaurant.restaurant.user_rating.aggregate_rating}</div></div></div></div>`
       // create a marker
       let marker = new window.google.maps.Marker({
@@ -177,7 +199,6 @@ class App extends Component {
 
       // add listener to hook marker to infowindow
       marker.addListener('click', () => {
-        //console.log("app marker listener");
         this.infoWindow.setContent(contentString);
         this.infoWindow.open(this.map, marker);
 
@@ -187,10 +208,9 @@ class App extends Component {
 
       // add listener to stop marker from bouncing when infowindow is closed
       this.infoWindow.addListener('closeclick', function() {
-        //console.log("app info window listener");
         arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
       }) 
-
+console.log(this.state.visible)
     })
   }
 
