@@ -38,6 +38,10 @@ class App extends Component {
         })
       }
     });
+
+    window.gm_authFailure = function() {
+        alert("Error loading map. Please try again later.");
+    };
   }
 
   componentWillUnmount() {
@@ -45,15 +49,12 @@ class App extends Component {
   }
 
   handleWindowSizeChange = () => {
-    console.log("handle size change");
     this.setState({width: window.innerWidth}, () => {
       if (this.state.width > 901) {
-        //let center = new window.google.maps.LatLng(35.7796, -78.6382)
         this.setState({visible : true}, () => {
           console.log(this.state.visible);
         })
       } else {
-        //let center = new window.google.maps.LatLng(35.7796, -78.6382)
         this.setState({visible : false}, () => {
           console.log(this.state.visible);
         })
@@ -63,15 +64,12 @@ class App extends Component {
 
   // function to update query state. runs each time text is inputted
   updateQuery = (query) => {
-    console.log("list: update query");
     this.setState({ query: query });
     this.filterList(query);
   }
 
   // function to filter restaurant list. runs each time text is inputted
   filterList = (query) => {
-    console.log("list: filterlist");
-    
     this.setState({ query: query })
 
     let allMarkers = this.state.markers
@@ -132,7 +130,6 @@ class App extends Component {
   }
 
   cleanUp(visible) {
-    console.log("app cleanup");
 
     // if list is being closed, we want to reset map
     if (!visible) {
@@ -165,7 +162,6 @@ class App extends Component {
   }
 
   initMap = () => {
-    console.log("initmap");
     let arrayMarkers = this.state.markers;
 
     this.map = new window.google.maps.Map(document.getElementById('map'), {
@@ -210,7 +206,6 @@ class App extends Component {
       this.infoWindow.addListener('closeclick', function() {
         arrayMarkers.map(thisMarker => thisMarker.setAnimation(null))
       }) 
-console.log(this.state.visible)
     })
   }
 
@@ -227,13 +222,22 @@ console.log(this.state.visible)
       })
     }).then(response => {
       return response.json()
-      
       }).then(json => {
         this.setState({
           restaurants: json.restaurants
         }, this.loadMap())
     }).catch(error => {
       console.log("Error: " + error);
+      const defaultRestaurants = [
+        {
+
+          "restaurant": {
+            "id": 1,
+            "name": "Restaurants could not be loaded"
+          }
+        }
+      ]
+      this.setState({ restaurants : defaultRestaurants});
       alert("Error loading restaurants");
     })
   }
@@ -251,7 +255,7 @@ console.log(this.state.visible)
           query={this.state.query}
           updateQuery={this.updateQuery} 
         />
-        <TacoMap />
+        <TacoMap error={this.state.error}/>
       </main>
     );
   }
@@ -262,10 +266,9 @@ function loadScript(url, state) {
   const index = window.document.getElementsByTagName("script")[0]
   const script = window.document.createElement("script")
   script.src = url
-  script.async = true
   script.defer = true
   script.onerror = function() {
-    alert("Error loading map");
+    alert("Error loading map. Please try again later.");
   }
   index.parentNode.insertBefore(script, index)
 }
