@@ -19,9 +19,13 @@ You can also view the live demo hosted on Github Pages:
 
 ### Credits
 [Udacity Project Walk-throughs](https://www.youtube.com/channel/UCcWSbBe_s-T_gZRnqFbtyIA)
+
 [Animated Slide Navigations](https://www.kirupa.com/react/smooth_sliding_menu_react_motion.htm)
+
 [Accessing Media Queries in React](https://goshakkk.name/different-mobile-desktop-tablet-layouts-react/)
+
 [Google Maps API](https://cloud.google.com/maps-platform/)
+
 [Zomato API](https://developers.zomato.com/api)
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
