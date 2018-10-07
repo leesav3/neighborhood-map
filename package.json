@@ -2,7 +2,7 @@
   "name": "neighborhood-map",
   "version": "0.1.0",
   "private": true,
-  "homepage": "",
+  "homepage": "https://leesav3.github.io/neighborhood-map",
   "dependencies": {
     "escape-string-regexp": "^1.0.5",
     "react": "^16.5.2",
